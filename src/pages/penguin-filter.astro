@@ -1,0 +1,47 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+    <select name="species" id="species">
+        <option value="">All species</option>
+        <option value="Adelie">Adelie</option>
+        <option value="Chinstrap">Chinstrap</option>
+        <option value="Gentoo">Gentoo</option>
+    </select>
+    <div id="myplot"></div>
+</Layout>
+
+<script>
+    import * as Plot from "@observablehq/plot";
+    import penguin from "../assets/penguins.json";
+
+
+    function updatePlot(selectedSpecies = "") {
+        const filteredPenguins = selectedSpecies
+            ? penguin.filter((p) => p.species === selectedSpecies)
+            : penguin;
+        const plot = Plot.dot(filteredPenguins, {
+            x: "culmen_length_mm",
+            y: "culmen_depth_mm",
+            stroke: "species",
+        }).plot();
+        const div = document.querySelector("#myplot");
+        if (div) {
+            div.innerHTML = ""; 
+            div.append(plot); 
+        }
+    }
+
+
+    updatePlot();
+
+ 
+    const SelectSpecies = document.getElementById(
+        "species",
+    ) as HTMLSelectElement;
+    SelectSpecies?.addEventListener("change", () => {
+        const selectedSpecies = SelectSpecies?.value;
+        updatePlot(selectedSpecies);
+    });
+</script>

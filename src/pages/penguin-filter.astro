@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
+    <a href ="/">Vers index</a>
     <select name="species" id="species">
         <option value="">All species</option>
         <option value="Adelie">Adelie</option>
@@ -13,35 +14,43 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script>
+    // Importe la librairie Plot d'ObservableHQ
     import * as Plot from "@observablehq/plot";
-    import penguin from "../assets/penguins.json";
+    // Importe les données des manchots depuis un fichier JSON
+    import penguins from "../assets/penguins.json";
 
+    // Récupère l'élément select pour choisir l'espèce
 
-    function updatePlot(selectedSpecies = "") {
-        const filteredPenguins = selectedSpecies
-            ? penguin.filter((p) => p.species === selectedSpecies)
-            : penguin;
-        const plot = Plot.dot(filteredPenguins, {
-            x: "culmen_length_mm",
-            y: "culmen_depth_mm",
-            stroke: "species",
-        }).plot();
-        const div = document.querySelector("#myplot");
-        if (div) {
-            div.innerHTML = ""; 
-            div.append(plot); 
-        }
+    const selectSpecies = document.getElementById(
+        "species",
+    ) as HTMLSelectElement | null;
+
+    // Fonction pour afficher le graphique
+    function renderPlot() {
+        // Récupère l'espèce sélectionnée
+        const species = selectSpecies?.value;
+
+        const plotDiv = document.getElementById("myplot");
+        // Crée le graphique avec Plot
+        // Vide le contenu précédent de la div
+        if (plotDiv) plotDiv.innerHTML = "";
+        const plot = Plot.plot({
+            marks: [
+                Plot.dot(penguins, {
+                    x: "culmen_length_mm",
+                    y: "culmen_depth_mm",
+                    stroke: "species",
+                    filter: species ? (d) => d.species === species : undefined,
+                }),
+            ],
+        });
+        // Ajoute le graphique à la div
+        if (plotDiv) plotDiv.appendChild(plot);
     }
 
+    // Ajoute un écouteur d'événement pour le changement d'espèce (appel 'renderPlot')
+    selectSpecies?.addEventListener("change", renderPlot);
 
-    updatePlot();
-
- 
-    const SelectSpecies = document.getElementById(
-        "species",
-    ) as HTMLSelectElement;
-    SelectSpecies?.addEventListener("change", () => {
-        const selectedSpecies = SelectSpecies?.value;
-        updatePlot(selectedSpecies);
-    });
+    // Affiche le graphique au chargement de la page
+    renderPlot();
 </script>

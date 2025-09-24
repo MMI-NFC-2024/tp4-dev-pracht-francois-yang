@@ -1,0 +1,84 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+    <a href ="/">Vers index</a>
+    <div style="margin-bottom: 20px;">
+        <label for="species">Species:</label>
+        <select name="species" id="species">
+            <option value="">All species</option>
+            <option value="Adelie">Adelie</option>
+            <option value="Chinstrap">Chinstrap</option>
+            <option value="Gentoo">Gentoo</option>
+        </select>
+        
+        <label for="island" style="margin-left: 20px;">Island:</label>
+        <select name="island" id="island">
+            <option value="">All islands</option>
+            <option value="Biscoe">Biscoe</option>
+            <option value="Dream">Dream</option>
+            <option value="Torgersen">Torgersen</option>
+        </select>
+        
+        <label for="sex" style="margin-left: 20px;">Sex:</label>
+        <select name="sex" id="sex">
+            <option value="">All sexes</option>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
+        </select>
+    </div>
+    <div id="myplot"></div>
+</Layout>
+
+<script>
+    // Importe la librairie Plot d'ObservableHQ
+    import * as Plot from "@observablehq/plot";
+    // Importe les données des manchots depuis un fichier JSON
+    import penguins from "../assets/penguins.json";
+
+    // Récupère les éléments select pour les filtres
+    const selectSpecies = document.getElementById("species") as HTMLSelectElement | null;
+    const selectIsland = document.getElementById("island") as HTMLSelectElement | null;
+    const selectSex = document.getElementById("sex") as HTMLSelectElement | null;
+
+    // Fonction pour afficher le graphique
+    function renderPlot() {
+        // Récupère les valeurs sélectionnées
+        const species = selectSpecies?.value;
+        const island = selectIsland?.value;
+        const sex = selectSex?.value;
+
+        const plotDiv = document.getElementById("myplot");
+        // Vide le contenu précédent de la div
+        if (plotDiv) plotDiv.innerHTML = "";
+        
+        // Crée le graphique avec Plot
+        const plot = Plot.plot({
+            marks: [
+                Plot.dot(penguins, {
+                    x: "culmen_length_mm",
+                    y: "culmen_depth_mm",
+                    stroke: "species",
+                    filter: (d: any) => {
+                        // Applique tous les filtres en même temps
+                        const speciesMatch = !species || d.species === species;
+                        const islandMatch = !island || d.island === island;
+                        const sexMatch = !sex || d.sex === sex;
+                        return speciesMatch && islandMatch && sexMatch;
+                    },
+                }),
+            ],
+        });
+        // Ajoute le graphique à la div
+        if (plotDiv) plotDiv.appendChild(plot);
+    }
+
+    // Ajoute des écouteurs d'événement pour tous les filtres
+    selectSpecies?.addEventListener("change", renderPlot);
+    selectIsland?.addEventListener("change", renderPlot);
+    selectSex?.addEventListener("change", renderPlot);
+
+    // Affiche le graphique au chargement de la page
+    renderPlot();
+</script>

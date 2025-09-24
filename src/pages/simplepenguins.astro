@@ -3,7 +3,31 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-    <div id="myplot"></div>
+    <div class="container mx-auto px-4 py-8">
+        <!-- Navigation -->
+        <nav class="mb-8">
+            <a 
+                href="/" 
+                class="inline-flex items-center bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+            >
+                ← Retour à l'index
+            </a>
+        </nav>
+
+        <!-- Title -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Simple Penguins</h1>
+            <p class="text-lg text-gray-600">Visualisation simple des données des penguins</p>
+        </div>
+
+        <!-- Chart Container -->
+        <div class="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Graphique des Penguins</h2>
+            <div class="flex justify-center">
+                <div id="myplot" class="w-full max-w-4xl"></div>
+            </div>
+        </div>
+    </div>
 </Layout>
 
 <script>

@@ -16,13 +16,13 @@ import Layout from "../layouts/Layout.astro";
 
         <!-- Title -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Plot Vanilla</h1>
-            <p class="text-lg text-gray-600">Histogramme généré avec des données aléatoires</p>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Simple Industries</h1>
+            <p class="text-lg text-gray-600">Visualisation des données de chômage par industrie</p>
         </div>
 
         <!-- Chart Container -->
         <div class="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-            <h2 class="text-xl font-semibold mb-4 text-gray-700">Histogramme aléatoire</h2>
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Évolution du Chômage par Industrie</h2>
             <div class="flex justify-center">
                 <div id="myplot" class="w-full max-w-4xl"></div>
             </div>
@@ -32,11 +32,24 @@ import Layout from "../layouts/Layout.astro";
 
 <script>
     import * as Plot from "@observablehq/plot";
+    import industries from "../assets/industries.json";
 
-    const plot = Plot.rectY(
-        { length: 10000 },
-        Plot.binX({ y: "count" }, { x: Math.random }),
-    ).plot();
+    const plot = Plot.plot({
+        marks: [
+            Plot.line(industries, {
+                x: "date",
+                y: "unemployed",
+                stroke: "industry",
+                title: (d: any) => `${d.industry}: ${d.unemployed} chômeurs`
+            })
+        ],
+        x: { type: "time", label: "Date" },
+        y: { label: "Nombre de chômeurs" },
+        color: { legend: true }
+    });
+    
     const div = document.querySelector("#myplot");
-    div?.append(plot);
+    if (div) {
+        div.append(plot);
+    }
 </script>
